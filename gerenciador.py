@@ -1,6 +1,6 @@
 from equipamento import Equipamento, TipoAtivo
 from vulnerabilidade import Vulnerabilidade
-from Cyber_ativos.persistencia import PersistenciaInventario
+from persistencia import PersistenciaInventario
 
 class GerenciadorInventario:
     def __init__(self, persistencia: PersistenciaInventario):
@@ -33,6 +33,7 @@ class GerenciadorInventario:
                     setor=item["setor"],
                     tipo=tipo_enum
                 )
+                
                 # Reconstruindo as vulnerabilidades associadas
                 for vuln_data in item.get("vulnerabilidades", []):
                     vuln = Vulnerabilidade(
@@ -41,12 +42,13 @@ class GerenciadorInventario:
                         severidade=vuln_data["severidade"],
                         status=vuln_data["status"]
                     )
-                equipamento.adicionar_vulnerabilidade(vuln)
+                    equipamento.adicionar_vulnerabilidade(vuln)
 
-            self._ativos[equipamento.id] = equipamento # Adiciona o equipamento ao dicionário de ativos e faz a busca pelo ID do equipamento
+                # Garante que CADA equipamento processado seja adicionado à tabela hash
+                self._ativos[equipamento.id] = equipamento 
+
         except Exception as e:
             print(f"⚠️ Erro ao carregar os dados: {e}")
-
 
     def salvar_dados(self):
         """Converte os objetos em dicionários e salva no arquivo JSON."""

@@ -4,8 +4,8 @@
         "hostname": "GG",
         "responsavel": "Fil",
         "setor": "Ti",
-        "tipo_codigo": 1,
-        "tipo_nome": "Notebook",
+        "tipo_codigo": 4,
+        "tipo_nome": "Software_licenciado",
         "vulnerabilidades": []
     }
 ]

@@ -1,6 +1,6 @@
 import json
 import os
-from Cyber_ativos.persistencia import PersistenciaInventario
+from persistencia import PersistenciaInventario
 
 class PersistenciaJSON(PersistenciaInventario):
     def __init__(self, arquivo_db="inventario.json"):
