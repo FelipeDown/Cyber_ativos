@@ -15,7 +15,7 @@ def exibir_menu():
     print("[0] Sair do Sistema")
     print("=" * 40)
 
-def obeter_opcao_menu() -> int:
+def obter_opcao_menu() -> int:
     try:
         return int(input("Escolha uma opção: ").strip())
     except ValueError:
@@ -215,7 +215,7 @@ def main():
 
     while True:
         exibir_menu()
-        opcao = obeter_opcao_menu()
+        opcao = obter_opcao_menu()
         
         if opcao == 1:
             menu_cadastrar_ativo(gerenciador)
