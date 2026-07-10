@@ -1,6 +1,6 @@
 from equipamento import Equipamento, TipoAtivo
 from vulnerabilidade import Vulnerabilidade
-from persistencia import PersistenciaInventario
+from Cyber_ativos.persistencia import PersistenciaInventario
 
 class GerenciadorInventario:
     def __init__(self, persistencia: PersistenciaInventario):

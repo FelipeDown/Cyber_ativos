@@ -2,7 +2,7 @@ import sys
 from gerenciador import GerenciadorInventario
 from equipamento import Equipamento, TipoAtivo
 from vulnerabilidade import Vulnerabilidade
-from persistencia_json import PersistenciaJSON
+from Cyber_ativos.persistencia_json import PersistenciaJSON
 
 def exibir_menu():
     print("\n" + "=" * 40)
