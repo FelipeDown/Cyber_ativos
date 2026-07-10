@@ -2,6 +2,7 @@ import sys
 from gerenciador import GerenciadorInventario
 from equipamento import Equipamento, TipoAtivo
 from vulnerabilidade import Vulnerabilidade
+from persistencia_json import PersistenciaJSON
 
 def exibir_menu():
     print("\n" + "=" * 40)
@@ -112,6 +113,7 @@ def menu_cadastrar_vulnerabilidade(gerenciador: GerenciadorInventario):
 
         nova_vulnerabilidade = Vulnerabilidade(descricao, categoria, severidade, status)
         ativo.adicionar_vulnerabilidade(nova_vulnerabilidade)
+        gerenciador.salvar_dados()  # Salva os dados após adicionar a vulnerabilidade
         print(f"✅ Vulnerabilidade '{descricao}' vinculada ao ativo '{ativo.hostname}' com sucesso!")
     except (ValueError, IndexError):
         print("❌ Erro: Entrada inválida. Certifique-se de digitar números válidos para ID, severidade e status.")
@@ -211,7 +213,8 @@ def menu_deletar_ativo(gerenciador: GerenciadorInventario):
 
 
 def main():
-    gerenciador = GerenciadorInventario()
+    persistencia_json = PersistenciaJSON("inventario.json")
+    gerenciador = GerenciadorInventario(persistencia_json)
 
     while True:
         exibir_menu()

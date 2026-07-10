@@ -1,11 +1,12 @@
-import json
-import os
 from equipamento import Equipamento, TipoAtivo
 from vulnerabilidade import Vulnerabilidade
+from persistencia import PersistenciaInventario
 
 class GerenciadorInventario:
-    def __init__(self, arquivo_db="inventario.json"):
-        self._arquivo_db = arquivo_db
+    def __init__(self, persistencia: PersistenciaInventario):
+        """recebe qualquer classe 
+        que implemente a interface abstrata PersistenciaInventario."""
+        self._persistencia = persistencia
         self._ativos = {} # Dicionário para armazenar os equipamentos, chave: id_ativo, valor: Equipamento
         self.carregar_dados()
 
@@ -14,39 +15,37 @@ class GerenciadorInventario:
         return self._ativos
     
     def carregar_dados(self):
-        """Lê o arquivo JSON do disco e reconstrói os objetos na memória."""
-        if not os.path.exists(self._arquivo_db):
-            return  # Se o arquivo não existir, começa com o dicionário vazio
-        
-        if os.path.getsize(self._arquivo_db) == 0:
-            return
-        
+        """Lê os dados usando a classe abstrata de persistência polimórfica e reconstrói na memória."""
         try:
-            with open(self._arquivo_db, 'r', encoding='utf-8') as f:
-                dados_json = json.load(f) # Lê a lista de JSONs
-                self._ativos.clear()
+            # O polimorfismo acontece aqui: não sabemos a tecnologia de armazenamento utilizada
+            dados_json = self._persistencia.carregar()
+            self._ativos.clear()
 
-                for item in dados_json:
-                    tipo_enum = TipoAtivo(item["tipo_codigo"])
-                    equipamento = Equipamento(
-                        id_ativo=item["id"],
-                        hostname=item["hostname"],
-                        responsavel=item["responsavel"],
-                        setor=item["setor"],
-                        tipo=tipo_enum
+            if not dados_json:
+                return  
+
+            for item in dados_json:
+                tipo_enum = TipoAtivo(item["tipo_codigo"])
+                equipamento = Equipamento(
+                    id_ativo=item["id"],
+                    hostname=item["hostname"],
+                    responsavel=item["responsavel"],
+                    setor=item["setor"],
+                    tipo=tipo_enum
+                )
+                # Reconstruindo as vulnerabilidades associadas
+                for vuln_data in item.get("vulnerabilidades", []):
+                    vuln = Vulnerabilidade(
+                        descricao=vuln_data["descricao"],
+                        categoria=vuln_data["categoria"],
+                        severidade=vuln_data["severidade"],
+                        status=vuln_data["status"]
                     )
-                    # Reconstruindo as vulnerabilidades associadas
-                    for vuln_data in item.get("vulnerabilidades", []):
-                        vuln = Vulnerabilidade(
-                            descricao=vuln_data["descricao"],
-                            categoria=vuln_data["categoria"],
-                            severidade=vuln_data["severidade"],
-                            status=vuln_data["status"]
-                        )
-                        equipamento.adicionar_vulnerabilidade(vuln)
-                    self._ativos[equipamento.id] = equipamento # Adiciona o equipamento ao dicionário de ativos e faz a busca pelo ID do equipamento
+                equipamento.adicionar_vulnerabilidade(vuln)
+
+            self._ativos[equipamento.id] = equipamento # Adiciona o equipamento ao dicionário de ativos e faz a busca pelo ID do equipamento
         except Exception as e:
-            print(f"⚠️ Erro ao carregar o arquivo de inventário: {e}")
+            print(f"⚠️ Erro ao carregar os dados: {e}")
 
 
     def salvar_dados(self):
@@ -55,9 +54,8 @@ class GerenciadorInventario:
             # Transforma cada objeto Equipamento no dicionário estruturado usando o método to_dict()
             lista_para_salvar = [ativo.to_dict() for ativo in self._ativos.values()]
 
-            with open(self._arquivo_db, 'w', encoding='utf-8') as f:
-                # Escreve no arquivo JSON com indentação para melhor legibilidade
-                json.dump(lista_para_salvar, f, indent=4, ensure_ascii=False)
+            # O polimorfismo acontece aqui: o gerenciador apenas delega a gravação
+            self._persistencia.salvar(lista_para_salvar)
         except Exception as e:
             print(f"❌ Erro ao salvar os dados no arquivo: {e}")
 
