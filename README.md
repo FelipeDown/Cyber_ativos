@@ -21,7 +21,7 @@ A aplicação foi projetada para rodar sem dependências de pacotes externos, ut
 
 * **Necessário para execução:** Ter o **Docker** instalado e ativo na máquina.
 
----
+
 
 ## 🐋 Como Executar a Aplicação com Docker
 
@@ -29,7 +29,7 @@ Abra o terminal do seu sistema operacional (Terminal no Linux, Prompt de Comando
 
 ### Passo 1: Construir a Imagem Docker
 Este comando compila a aplicação e aplica todas as atualizações de segurança internas:
-```bash
+
 docker build -t inventario-cyber-seguranca .
 
 ### Passo 2: no ambiente linux (Executar o Container (Com Persistência de Dados)
@@ -39,7 +39,9 @@ docker run -it --name app-inventario -v $(pwd)/inventario.json:/app/inventario.j
 
 ### Passo 2: no ambiente Windows (Executar o Container (Com Persistência de Dados)
 no PowerShell
+
 docker run -it --name app-inventario -v ${PWD}/inventario.json:/app/inventario.json inventario-cyber-seguranca
 
 no Prompt de Comando - CMD
+
 docker run -it --name app-inventario -v %cd%/inventario.json:/app/inventario.json inventario-cyber-seguranca
